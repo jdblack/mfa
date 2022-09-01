@@ -2,7 +2,10 @@ package main
 
 import (
 	"fmt"
-	"time"
+
+	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/container"
+	"fyne.io/fyne/v2/widget"
 )
 
 func printarr(in map[string]string) {
@@ -14,14 +17,19 @@ func printarr(in map[string]string) {
 }
 
 func main() {
-	otps := OtpConfig{}
-	otps.init("/Users/jblack/.otps")
-	for {
-		fmt.Println("---------")
-		for _, o := range otps.get() {
-			fmt.Printf("%s\n    %s\n", o.name, o.token)
-		}
-		time.Sleep(1 * time.Second)
-	}
+	a := app.New()
+	w := a.NewWindow("MFA Tool")
+	countdown := widget.NewLabel("Countdown")
+	box := container.NewVBox(countdown)
 
+	cfg := OtpConfig{}
+	cfg.init("/Users/jblack/.otps")
+	fmt.Println("---------")
+	for _, o := range cfg.otps.get() {
+		label := fmt.Sprintf("%s\n%s", o.name, o.token)
+		box.Add(widget.NewLabel(label))
+	}
+	box.Add(widget.NewButton("quit", func() { a.Quit() }))
+	w.SetContent(box)
+	w.ShowAndRun()
 }

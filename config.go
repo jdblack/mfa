@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 	"strings"
 	"sync"
@@ -12,48 +11,17 @@ import (
 
 // OtpConfig reads otps from a config file
 type OtpConfig struct {
-	otps []*Otp
+	otps Otps
 	path string
 	cron *cron.Cron
 	lock sync.Mutex
 }
 
-func (o *OtpConfig) refresh() {
-	o.lock.Lock()
-	defer o.lock.Unlock()
-	fmt.Println("refreshing")
-	for _, otp := range o.otps {
-		otp.refresh()
-	}
-}
-
-func (o *OtpConfig) get() []Otp {
-	o.lock.Lock()
-	defer o.lock.Unlock()
-	res := []Otp{}
-
-	for _, otp := range o.otps {
-		res = append(res, *otp)
-	}
-	return res
-}
-
-func (o *OtpConfig) resetCron() {
-	if o.cron != nil {
-		o.cron.Stop()
-		o.cron = nil
-	}
-	o.cron = cron.New(cron.WithSeconds())
-	o.cron.AddFunc("*/30 * * * * *", func() { o.refresh() })
-	o.cron.Start()
-}
-
 func (o *OtpConfig) init(path string) error {
 
 	o.lock.Lock()
-	o.otps = []*Otp{}
 	o.path = path
-	o.resetCron()
+	o.otps.resetCron()
 
 	input, err := o.readLines(path)
 	if err != nil {
@@ -66,10 +34,10 @@ func (o *OtpConfig) init(path string) error {
 		if found == false {
 			continue
 		}
-		o.otps = append(o.otps, &Otp{name: name, key: key})
+		o.otps.add(name, key)
 	}
 	o.lock.Unlock()
-	o.refresh()
+	o.otps.refresh()
 
 	return err
 }

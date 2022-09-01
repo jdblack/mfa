@@ -7,6 +7,7 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"fmt"
+
 	"strings"
 	"time"
 )
@@ -16,6 +17,7 @@ type Otp struct {
 	name  string
 	key   string
 	token string
+	str   string
 }
 
 func (o *Otp) refresh() error {
@@ -43,5 +45,6 @@ func (o *Otp) refresh() error {
 	h12 := (int(header) & 0x7fffffff) % 1000000
 
 	o.token = fmt.Sprintf("%06d", h12)
+	o.str = fmt.Sprintf("%s\n%s", o.name, o.token)
 	return nil
 }
