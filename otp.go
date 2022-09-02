@@ -8,6 +8,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"fyne.io/fyne/v2/data/binding"
+
 	"strings"
 	"time"
 )
@@ -16,8 +18,15 @@ import (
 type Otp struct {
 	name  string
 	key   string
-	token string
-	str   string
+	token binding.String
+	str   binding.String
+}
+
+func (o *Otp) init(name string, key string) {
+	o.name = name
+	o.key = key
+	o.token = binding.NewString()
+	o.str = binding.NewString()
 }
 
 func (o *Otp) refresh() error {
@@ -44,7 +53,7 @@ func (o *Otp) refresh() error {
 	}
 	h12 := (int(header) & 0x7fffffff) % 1000000
 
-	o.token = fmt.Sprintf("%06d", h12)
-	o.str = fmt.Sprintf("%s\n%s", o.name, o.token)
+	o.token.Set(fmt.Sprintf("%06d", h12))
+	o.str.Set(fmt.Sprintf("%s\n%s", o.name, o.token))
 	return nil
 }

@@ -4,39 +4,31 @@ import (
 	"bufio"
 	"os"
 	"strings"
-	"sync"
-
-	"github.com/robfig/cron/v3"
 )
 
 // OtpConfig reads otps from a config file
 type OtpConfig struct {
 	otps Otps
 	path string
-	cron *cron.Cron
-	lock sync.Mutex
 }
 
 func (o *OtpConfig) init(path string) error {
 
-	o.lock.Lock()
 	o.path = path
 	o.otps.resetCron()
 
 	input, err := o.readLines(path)
 	if err != nil {
-		o.lock.Unlock()
 		return err
 	}
 
 	for _, s := range input {
 		name, key, found := strings.Cut(s, ":")
-		if found == false {
+		if !found {
 			continue
 		}
 		o.otps.add(name, key)
 	}
-	o.lock.Unlock()
 	o.otps.refresh()
 
 	return err

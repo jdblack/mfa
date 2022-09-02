@@ -44,5 +44,8 @@ func (o *Otps) resetCron() {
 }
 
 func (o *Otps) add(name string, key string) {
-	o.otps = append(o.otps, &Otp{name: name, key: key})
+	var otp Otp
+	otp.init(name, key)
+
+	o.otps = append(o.otps, &otp)
 }
