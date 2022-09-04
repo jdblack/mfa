@@ -1,13 +1,15 @@
 package main
 
 import (
-	"fmt"
+	"image/color"
 	"time"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
+	"fyne.io/fyne/v2/layout"
 	"fyne.io/fyne/v2/widget"
 )
 
@@ -35,12 +37,15 @@ func main() {
 
 	cfg := OtpConfig{}
 	cfg.init("/Users/jblack/.otps")
-	fmt.Println("---------")
 	for _, o := range cfg.otps.get() {
-		box.Add(widget.NewLabel(o.name))
+		label := canvas.NewText(o.name, color.Black)
+		label.TextStyle = fyne.TextStyle{Bold: true}
+
+		box.Add(label)
 		box.Add(widget.NewLabelWithData(o.token))
+		box.Add(layout.NewSpacer())
 	}
-	box.Add(widget.NewButton("quit", func() { a.Quit() }))
+	box.Add(widget.NewButton("Quit", func() { a.Quit() }))
 	w.SetContent(box)
 	w.ShowAndRun()
 }
