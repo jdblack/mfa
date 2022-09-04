@@ -4,19 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/data/binding"
 	"fyne.io/fyne/v2/widget"
 )
-
-func printarr(in map[string]string) {
-	fmt.Printf("----------------\n")
-	for k, v := range in {
-		fmt.Printf("%s : %s\n", v, k)
-	}
-	fmt.Printf("----------------\n")
-}
 
 func tick(clock binding.Float) {
 	for {
@@ -30,6 +23,8 @@ func tick(clock binding.Float) {
 func main() {
 	a := app.New()
 	w := a.NewWindow("MFA Tool")
+	r, _ := fyne.LoadResourceFromURLString("https://picsum.photos/200")
+	w.SetIcon(r)
 
 	clock := binding.NewFloat()
 	go tick(clock)
